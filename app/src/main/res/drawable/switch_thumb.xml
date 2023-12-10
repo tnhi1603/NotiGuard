@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#FFFF" /> <!-- Màu xanh dương của thumb -->
+    <size android:width="36dp" android:height="36dp" /> <!-- Kích thước của thumb -->
+</shape>

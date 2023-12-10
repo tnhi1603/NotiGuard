@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "38044291031",
+    "project_id": "notiguard-6e5ea",
+    "storage_bucket": "notiguard-6e5ea.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:38044291031:android:48cd25d97bc5d54aa18592",
+        "android_client_info": {
+          "package_name": "com.example.notiguard"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVNI44X2hRRE0Yz0NnM6YAFrHsL1oGEnE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
