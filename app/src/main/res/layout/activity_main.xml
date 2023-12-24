@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="90dp"
+        android:layout_height="93dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -70,7 +70,9 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.727"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/status" />
+                app:layout_constraintTop_toBottomOf="@+id/status"
+                android:thumbTint="#E0E0E0"
+                android:trackTint="#FFFFFF"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -105,7 +107,9 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.735"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/detect" />
+                app:layout_constraintTop_toBottomOf="@+id/detect"
+                android:thumbTint="#E0E0E0"
+                android:trackTint="#FFFFFF"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
@@ -147,7 +151,9 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.735"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/led" />
+                app:layout_constraintTop_toBottomOf="@+id/led"
+                android:thumbTint="#E0E0E0"
+                android:trackTint="#FFFFFF"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Alarm -->
@@ -183,14 +189,16 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.735"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/alarm" />
+                app:layout_constraintTop_toBottomOf="@+id/alarm"
+                android:thumbTint="#E0E0E0"
+                android:trackTint="#FFFFFF"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="200dp"
         android:background="@color/white"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
