@@ -29,6 +29,8 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.widget.Switch;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Activity";
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int NOTIFICATION_REQUEST_CODE=1234;
     private static final String CHANNEL_ID = "MyChannelID";
     private static final int NOTIFICATION_ID = 1;
+    private Animation blinkAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
         alarmLayout = findViewById(R.id.alarmLayout);
         ledLayout = findViewById(R.id.ledLayout);
         statusLayout = findViewById(R.id.statusLayout);
+
+        blinkAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.drawable.blink);
 
         // Khởi tạo DatabaseReference cho Firebase Database
         mDatabase = FirebaseDatabase.getInstance().getReference("Noti");
@@ -265,9 +270,11 @@ public class MainActivity extends AppCompatActivity {
             // Khi Switch được bật
             layout.setClipToOutline(true);
             layout.setBackgroundResource(R.drawable.detect_c);
+            layout.startAnimation(blinkAnimation);
         } else {
             layout.setClipToOutline(true);
             layout.setBackgroundResource(R.drawable.rounded_corner);
+            layout.clearAnimation();
         }
     }
     private void updateLayoutBackgrounda(ConstraintLayout layout, boolean isChecked) {
