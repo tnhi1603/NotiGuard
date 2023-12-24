@@ -6,10 +6,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
-import android.widget.TextView;
+
 import android.util.Log;
 import android.os.Build;
 import android.app.AlertDialog;
@@ -25,13 +24,17 @@ import android.app.NotificationManager;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.ActivityCompat;
-import android.view.View;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.widget.Switch;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Activity";
-    private TextView detectTextView, alarmTextView, ledTextView, statusTextView;
-    private DatabaseReference mDatabase;
+    private Switch detectSwitch, alarmSwitch, ledSwitch, statusSwitch;
+    private ConstraintLayout detectLayout, alarmLayout, ledLayout, statusLayout;
+    private DatabaseReference mDatabase, uDatabase;
     private AlertDialog.Builder alertDialogBuilder;
     private static final int NOTIFICATION_REQUEST_CODE=1234;
     private static final String CHANNEL_ID = "MyChannelID";
@@ -46,17 +49,25 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Ánh xạ TextView từ layout
-        detectTextView = findViewById(R.id.detectTextView);
-        alarmTextView = findViewById(R.id.alarmTextView);
-        ledTextView = findViewById(R.id.ledTextView);
-        statusTextView = findViewById(R.id.statusTextView);
+        detectSwitch = findViewById(R.id.detectSwitch);
+        alarmSwitch = findViewById(R.id.alarmSwitch);
+        ledSwitch = findViewById(R.id.ledSwitch);
+        statusSwitch = findViewById(R.id.statusSwitch);
+
+        detectLayout = findViewById(R.id.detectLayout);
+        alarmLayout = findViewById(R.id.alarmLayout);
+        ledLayout = findViewById(R.id.ledLayout);
+        statusLayout = findViewById(R.id.statusLayout);
 
         // Khởi tạo DatabaseReference cho Firebase Database
         mDatabase = FirebaseDatabase.getInstance().getReference("Noti");
+        uDatabase = FirebaseDatabase.getInstance().getReference("User");
         // Khởi tạo AlertDialog.Builder
         alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setTitle("Thông báo"); // Tiêu đề của thông báo
         alertDialogBuilder.setMessage("Đã phát hiện chuyển động"); // Nội dung thông báo
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         // Thiết lập nút "OK" trong thông báo
         alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -67,13 +78,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //đọc dữ liệu user
+//        uDatabase.child("Status").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if (dataSnapshot.exists()) {
+//                    String statusData = dataSnapshot.getValue(String.class);
+//                    statusSwitch.setChecked("ON".equals(statusData));
+//                    }
+//                }
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                Log.w(TAG, "Failed to read value.", databaseError.toException());
+//            }
+//        });
+
         // Đọc dữ liệu từ các node 'detect', 'alarm', 'led', 'status'
         mDatabase.child("Detect").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    updateSwitchStated(detectSwitch, detectLayout, dataSnapshot);
                     String detectData = dataSnapshot.getValue(String.class);
-                    detectTextView.setText(detectData);
+                    detectSwitch.setChecked("ON".equals(detectData));
                     if ("ON".equals(detectData)) {
                         // Gửi thông báo pop-up
                         showAlertDialog();
@@ -88,13 +115,21 @@ public class MainActivity extends AppCompatActivity {
                 Log.w(TAG, "Failed to read value.", databaseError.toException());
             }
         });
-
+        detectSwitch.setOnCheckedChangeListener((buttonView, isChecked) ->
+                updateLayoutBackgroundd(detectLayout, isChecked));
+        alarmSwitch.setOnCheckedChangeListener((buttonView, isChecked) ->
+                updateLayoutBackgrounda(alarmLayout, isChecked));
+        ledSwitch.setOnCheckedChangeListener((buttonView, isChecked) ->
+                updateLayoutBackgroundl(ledLayout, isChecked));
+        statusSwitch.setOnCheckedChangeListener((buttonView, isChecked) ->
+                updateLayoutBackgrounds(statusLayout, isChecked));
         mDatabase.child("Alarm").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    updateSwitchStatea(alarmSwitch, alarmLayout, dataSnapshot);
                     String alarmData = dataSnapshot.getValue(String.class);
-                    alarmTextView.setText(alarmData);
+                    alarmSwitch.setChecked("ON".equals(alarmData));
                 }
             }
 
@@ -108,8 +143,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    updateSwitchStatel(ledSwitch, ledLayout, dataSnapshot);
                     String ledData = dataSnapshot.getValue(String.class);
-                    ledTextView.setText(ledData);
+                    ledSwitch.setChecked("ON".equals(ledData));
                 }
             }
 
@@ -123,8 +159,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    updateSwitchStates(statusSwitch, statusLayout, dataSnapshot);
                     String statusData = dataSnapshot.getValue(String.class);
-                    statusTextView.setText(statusData);
+                    statusSwitch.setChecked("ON".equals(statusData));
                 }
             }
 
@@ -166,6 +203,10 @@ public class MainActivity extends AppCompatActivity {
             // Show the notification
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
             notificationManager.notify(NOTIFICATION_ID, builder.build());
+
+            String notificationMessage = "Đã phát hiện chuyển động.";
+
+
         } else {
             // If permission is not granted, request it
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_NOTIFICATION_POLICY}, NOTIFICATION_REQUEST_CODE);
@@ -183,6 +224,80 @@ public class MainActivity extends AppCompatActivity {
                 // Permission denied, handle accordingly (e.g., inform the user)
                 Toast.makeText(this, "Permission denied. The app cannot show notifications.", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    private void updateSwitchStated(Switch aSwitch, ConstraintLayout layout, DataSnapshot dataSnapshot) {
+        if (dataSnapshot.exists()) {
+            String switchData = dataSnapshot.getValue(String.class);
+            boolean isChecked = "ON".equals(switchData);
+            aSwitch.setChecked(isChecked);
+            updateLayoutBackgroundd(layout, isChecked);
+        }
+    }
+    private void updateSwitchStatea(Switch aSwitch, ConstraintLayout layout, DataSnapshot dataSnapshot) {
+        if (dataSnapshot.exists()) {
+            String switchData = dataSnapshot.getValue(String.class);
+            boolean isChecked = "ON".equals(switchData);
+            aSwitch.setChecked(isChecked);
+            updateLayoutBackgrounda(layout, isChecked);
+        }
+    }
+    private void updateSwitchStates(Switch aSwitch, ConstraintLayout layout, DataSnapshot dataSnapshot) {
+        if (dataSnapshot.exists()) {
+            String switchData = dataSnapshot.getValue(String.class);
+            boolean isChecked = "ON".equals(switchData);
+            aSwitch.setChecked(isChecked);
+            updateLayoutBackgrounds(layout, isChecked);
+        }
+    }
+    private void updateSwitchStatel(Switch aSwitch, ConstraintLayout layout, DataSnapshot dataSnapshot) {
+        if (dataSnapshot.exists()) {
+            String switchData = dataSnapshot.getValue(String.class);
+            boolean isChecked = "ON".equals(switchData);
+            aSwitch.setChecked(isChecked);
+            updateLayoutBackgroundl(layout, isChecked);
+        }
+    }
+
+    private void updateLayoutBackgroundd(ConstraintLayout layout, boolean isChecked) {
+        if (isChecked) {
+            // Khi Switch được bật
+            layout.setClipToOutline(true);
+            layout.setBackgroundResource(R.drawable.detect_c);
+        } else {
+            layout.setClipToOutline(true);
+            layout.setBackgroundResource(R.drawable.rounded_corner);
+        }
+    }
+    private void updateLayoutBackgrounda(ConstraintLayout layout, boolean isChecked) {
+        if (isChecked) {
+            // Khi Switch được bật
+            layout.setClipToOutline(true);
+            layout.setBackgroundResource(R.drawable.alarm);
+        } else {
+            layout.setClipToOutline(true);
+            layout.setBackgroundResource(R.drawable.rounded_corner);
+        }
+    }
+    private void updateLayoutBackgroundl(ConstraintLayout layout, boolean isChecked) {
+        if (isChecked) {
+            // Khi Switch được bật
+            layout.setClipToOutline(true);
+            layout.setBackgroundResource(R.drawable.led);
+        } else {
+            layout.setClipToOutline(true);
+            layout.setBackgroundResource(R.drawable.rounded_corner);
+        }
+    }
+    private void updateLayoutBackgrounds(ConstraintLayout layout, boolean isChecked) {
+        if (isChecked) {
+            // Khi Switch được bật
+            layout.setClipToOutline(true);
+            layout.setBackgroundResource(R.drawable.status);
+        } else {
+            layout.setClipToOutline(true);
+            layout.setBackgroundResource(R.drawable.rounded_corner);
         }
     }
 }
